@@ -1,0 +1,36 @@
+{
+  "name": "rss_plugin",
+  "display_name": "RSS 新闻阅读器",
+  "version": "1.0.0",
+  "description": "RSS 源获取插件 — 让机器人可以订阅 RSS 源、定时抓取新闻、主动阅读并分享新闻摘要。",
+  "author": "ikun两年半喵",
+  "license": "AGPL-3.0",
+  "dependencies": {
+    "plugins": [],
+    "components": []
+  },
+  "include": [
+    {
+      "component_type": "service",
+      "component_name": "rss_feed",
+      "dependencies": [],
+      "enabled": true
+    },
+    {
+      "component_type": "tool",
+      "component_name": "query_rss",
+      "dependencies": [],
+      "enabled": true
+    },
+    {
+      "component_type": "command",
+      "component_name": "rss",
+      "dependencies": [],
+      "enabled": true
+    }
+  ],
+  "entry_point": "plugin.py",
+  "min_core_version": "1.0.0",
+  "python_dependencies": ["feedparser", "httpx"],
+  "dependencies_required": true
+}
