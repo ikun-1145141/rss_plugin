@@ -46,7 +46,7 @@ jobs:
 
       - name: Publish plugin
         if: steps.version.outputs.changed == 'true'
-        run: mpdt market publish .
+        run: mpdt market package-new-version .
 
       - name: Summary
         if: steps.version.outputs.changed == 'true'
