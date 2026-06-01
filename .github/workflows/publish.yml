@@ -63,8 +63,8 @@ jobs:
         run: |
           VERSION="${{ steps.version.outputs.current }}"
           TAG="v${VERSION}"
-          git tag -a "$TAG" -m "Release ${TAG}" 2>/dev/null || echo "Tag $TAG already exists locally"
-          git push origin "$TAG"
+          git tag -f -a "$TAG" -m "Release ${TAG}"
+          git push origin tag "$TAG" --force
 
       - name: Summary
         if: steps.version.outputs.changed == 'true'
