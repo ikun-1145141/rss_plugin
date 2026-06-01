@@ -5,7 +5,7 @@
   "description": "RSS 源获取插件 — 让机器人可以订阅 RSS 源、定时抓取新闻、主动阅读并分享新闻摘要。",
   "author": "ikun两年半喵",
   "license": "AGPL-3.0",
-  "categories": ["资讯", "工具"],
+  "categories": ["information", "tool"],
   "tags": ["rss", "新闻", "订阅", "news", "feed"],
   "dependencies": {
     "plugins": [],
