@@ -17,8 +17,13 @@ jobs:
           token: ${{ secrets.MPDT_GITHUB_TOKEN }}
 
       - name: Configure git credentials
+        env:
+          GH_TOKEN: ${{ secrets.MPDT_GITHUB_TOKEN }}
         run: |
-          git remote set-url origin https://x-access-token:${{ secrets.MPDT_GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+          # 写入 credential store，让所有 git 操作都用 PAT
+          git config --global credential.helper store
+          echo "https://x-access-token:${{ secrets.MPDT_GITHUB_TOKEN }}@github.com" > ~/.git-credentials
+          git remote set-url origin https://github.com/${{ github.repository }}.git
 
       - name: Check version change
         id: version
@@ -51,6 +56,9 @@ jobs:
 
       - name: Publish plugin
         if: steps.version.outputs.changed == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.MPDT_GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.MPDT_GITHUB_TOKEN }}
         run: mpdt market package-update .
 
       - name: Summary
