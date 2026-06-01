@@ -13,7 +13,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 2  # 需要前一次提交来对比版本变更
+          fetch-depth: 2
+          token: ${{ secrets.MPDT_GITHUB_TOKEN }}
+
+      - name: Configure git credentials
+        run: |
+          git remote set-url origin https://x-access-token:${{ secrets.MPDT_GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
 
       - name: Check version change
         id: version
