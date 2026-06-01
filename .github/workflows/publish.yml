@@ -63,6 +63,15 @@ jobs:
         run: |
           VERSION="${{ steps.version.outputs.current }}"
           TAG="v${VERSION}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -f -a "$TAG" -m "Release ${TAG}"
+          git push origin tag "$TAG" --force
+
+      - name: Summary
+        if: steps.version.outputs.changed == 'true'
+        run: echo "✅ rss_plugin v${{ steps.version.outputs.current }} 已发布" >> $GITHUB_STEP_SUMMARY
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git tag -f -a "$TAG" -m "Release ${TAG}"
           git push origin tag "$TAG" --force
 
