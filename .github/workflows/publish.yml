@@ -36,9 +36,9 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install mpdt
+      - name: Install mofox-plugin-dev-toolkit
         if: steps.version.outputs.changed == 'true'
-        run: pip install mpdt
+        run: pip install mofox-plugin-dev-toolkit
 
       - name: Configure GitHub token
         if: steps.version.outputs.changed == 'true'
