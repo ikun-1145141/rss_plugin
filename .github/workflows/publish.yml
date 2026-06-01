@@ -20,10 +20,21 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.MPDT_GITHUB_TOKEN }}
         run: |
-          # 写入 credential store，让所有 git 操作都用 PAT
+          # GIT_ASKPASS 脚本：拦截所有 git 认证请求，强制使用 PAT
+          cat > /tmp/git-askpass.sh << 'ASKPASS_EOF'
+          #!/bin/bash
+          echo "askpass called: $* env=$MPDT_GITHUB_TOKEN" >> /tmp/git-askpass.log
+          echo "${MPDT_GITHUB_TOKEN}"
+          ASKPASS_EOF
+          chmod +x /tmp/git-askpass.sh
+          # 写入 credential store 兜底
           git config --global credential.helper store
           echo "https://x-access-token:${{ secrets.MPDT_GITHUB_TOKEN }}@github.com" > ~/.git-credentials
           git remote set-url origin https://github.com/${{ github.repository }}.git
+          echo "=== 验证配置 ==="
+          echo "remote: $(git remote get-url origin)"
+          echo "askpass: $(cat /tmp/git-askpass.sh)"
+          echo "credentials: $(cat ~/.git-credentials | head -c 30)..."
 
       - name: Check version change
         id: version
@@ -59,7 +70,19 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.MPDT_GITHUB_TOKEN }}
           GH_TOKEN: ${{ secrets.MPDT_GITHUB_TOKEN }}
-        run: mpdt market package-update .
+          MPDT_GITHUB_TOKEN: ${{ secrets.MPDT_GITHUB_TOKEN }}
+          GIT_ASKPASS: /tmp/git-askpass.sh
+        run: |
+          echo "GIT_ASKPASS=$GIT_ASKPASS"
+          echo "MPDT_GITHUB_TOKEN=${MPDT_GITHUB_TOKEN:+已设置(${#MPDT_GITHUB_TOKEN}字符)}"
+          echo "remote=$(git remote get-url origin)"
+          mpdt market package-update . || {
+            echo "=== askpass 调用日志 ==="
+            cat /tmp/git-askpass.log 2>/dev/null || echo "(无日志，askpass 从未被调用)"
+            exit 1
+          }
+          echo "=== askpass 调用日志 ==="
+          cat /tmp/git-askpass.log 2>/dev/null || echo "(无日志，askpass 从未被调用)"
 
       - name: Summary
         if: steps.version.outputs.changed == 'true'
